@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en"><head><script async="" src="https://www.googletagmanager.com/gtag/js?id=G-1CQ4D3VQ3L"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-1CQ4D3VQ3L');
+  </script>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Voronoi Vale: Organic GPU Art Generator</title>
+
+<meta name="description" content="An interactive GPU-accelerated simulation creating organic Voronoi patterns with real-time physics, domain warping, and customizable visual styles.">
+<meta name="keywords" content="Voronoi, WebGPU, Generative Art, Procedural Patterns, Interactive Simulation, Domain Warping, Physics Engine, Digital Wallpaper">
+<meta name="author" content="Chris Pirillo">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0f172a">
+
+<meta property="og:site_name" content="Chris Pirillo's Arcade">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Voronoi Vale: Organic GPU Art Generator">
+<meta property="og:description" content="An interactive GPU-accelerated simulation creating organic Voronoi patterns with real-time physics, domain warping, and customizable visual styles.">
+<meta property="og:url" content="https://pirillo.com/arcade/voronoi-vale.html">
+<meta property="og:image" content="https://pirillo.com/arcade/images/voronoi-vale.png">
+<meta property="og:image:alt" content="Voronoi Vale: Organic GPU Art Generator">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@ChrisPirillo">
+<meta name="twitter:creator" content="@ChrisPirillo">
+<meta name="twitter:title" content="Voronoi Vale: Organic GPU Art Generator">
+<meta name="twitter:description" content="An interactive GPU-accelerated simulation creating organic Voronoi patterns with real-time physics, domain warping, and customizable visual styles.">
+<meta name="twitter:image" content="https://pirillo.com/arcade/images/voronoi-vale.png">
+<meta name="twitter:domain" content="pirillo.com">
+
+<link rel="canonical" href="https://pirillo.com/arcade/voronoi-vale.html">
+
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Voronoi Vale: Organic GPU Art Generator",
+  "description": "An interactive GPU-accelerated simulation creating organic Voronoi patterns with real-time physics, domain warping, and customizable visual styles.",
+  "keywords": "Voronoi, WebGPU, Generative Art, Procedural Patterns, Interactive Simulation, Domain Warping, Physics Engine, Digital Wallpaper",
+  "url": "https://pirillo.com/arcade/voronoi-vale.html",
+  "image": "https://pirillo.com/arcade/images/voronoi-vale.png",
+  "primaryImageOfPage": {
+    "@type": "ImageObject",
+    "url": "https://pirillo.com/arcade/images/voronoi-vale.png"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Chris Pirillo",
+    "url": "https://pirillo.com",
+    "sameAs": [
+      "https://x.com/ChrisPirillo"
+    ]
+  },
+  "mainEntity": {
+    "name": "Voronoi Vale: Organic GPU Art Generator",
+    "description": "An interactive GPU-accelerated simulation creating organic Voronoi patterns with real-time physics, domain warping, and customizable visual styles.",
+    "image": "https://pirillo.com/arcade/images/voronoi-vale.png",
+    "operatingSystem": "Web Browser",
+    "author": {
+      "@type": "Person",
+      "name": "Chris Pirillo"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock"
+    },
+    "@type": "WebApplication",
+    "applicationCategory": "Simulation"
+  }
+}</script>
+
+<meta charset="UTF-8">
+<style>:root { --bg: #050505; --panel-bg: rgba(12, 12, 12, 0.95); --accent: #00ff88; --accent-dim: rgba(0, 255, 136, 0.15); --text: #eeeeee; --text-dim: #888; --border: rgba(255, 255, 255, 0.12); --font-mono: 'SF Mono', 'Menlo', 'Consolas', monospace; --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; --radius: 8px; }
+body { margin: 0; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--font-ui); user-select: none; -webkit-user-select: none; touch-action: none; }
+canvas { display: block; width: 100vw; height: 100vh; transition: opacity 0.4s ease-out; outline: none; }
+.fade-out { opacity: 0; }
+#ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
+#menu-trigger { position: absolute; top: 24px; right: 24px; width: 44px; height: 44px; pointer-events: auto; cursor: pointer; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); border-radius: var(--radius); border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); z-index: 200; }
+#menu-trigger span { display: block; width: 20px; height: 2px; background-color: var(--text); border-radius: 2px; transition: background 0.2s; }
+#menu-trigger:hover { border-color: var(--accent); box-shadow: 0 0 20px var(--accent-dim); transform: translateY(-1px); }
+#menu-trigger:hover span { background-color: var(--accent); }
+#settings-panel { position: absolute; top: 20px; bottom: 20px; right: 20px; width: 340px; background: var(--panel-bg); backdrop-filter: blur(40px); border: 1px solid var(--border); border-radius: 12px; transform: translateX(calc(100% + 40px)); transition: transform 0.35s cubic-bezier(0.19, 1, 0.22, 1); pointer-events: auto; display: flex; flex-direction: column; box-shadow: 0 40px 80px rgba(0,0,0,0.8); overflow: hidden; z-index: 300; }
+#settings-panel.active { transform: translateX(0); }
+.panel-header { flex: 0 0 64px; display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); gap: 12px; }
+.panel-header h2 { font-family: var(--font-mono); font-size: 14px; margin: 0; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; flex: 1; }
+.header-actions { display: flex; align-items: center; gap: 8px; height: 32px; }
+.header-btn { background: transparent; border: 1px solid transparent; color: var(--text-dim); cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s; padding: 0; }
+.header-btn:hover { color: var(--text); background: rgba(255,255,255,0.05); border-color: var(--border); }
+.header-btn.close:hover { color: var(--accent); border-color: var(--accent); }
+.header-btn svg { width: 18px; height: 18px; stroke-width: 2.5; display: block; }
+.panel-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0; }
+.section-header { padding: 14px 20px; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); font-weight: 700; background: rgba(0,0,0,0.2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.section-header:first-child { border-top: none; }
+.section-content { padding: 20px; display: flex; flex-direction: column; gap: 18px; }
+.control-row { display: flex; flex-direction: column; gap: 6px; }
+.control-top { display: flex; justify-content: space-between; align-items: center; }
+.label-text { font-size: 12px; font-weight: 500; color: #ccc; }
+input[type="number"] { background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 4px; color: var(--accent); font-family: var(--font-mono); font-size: 11px; width: 48px; padding: 4px; text-align: right; outline: none; -moz-appearance: textfield; }
+input[type="number"]:focus { border-color: var(--accent); }
+.slider-container { height: 16px; display: flex; align-items: center; }
+input[type="range"] { -webkit-appearance: none; width: 100%; height: 4px; background: #2a2a2a; border-radius: 2px; outline: none; cursor: pointer; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: #ddd; border: 2px solid #2a2a2a; transition: transform 0.1s; }
+input[type="range"]:hover::-webkit-slider-thumb { background: #fff; transform: scale(1.2); }
+input[type="range"]:active::-webkit-slider-thumb { background: var(--accent); }
+.color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 10px 0; }
+input[type="color"] { -webkit-appearance: none; border: none; width: 100%; height: 34px; border-radius: 6px; background: none; cursor: pointer; }
+input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+input[type="color"]::-webkit-color-swatch { border: 1px solid var(--border); border-radius: 6px; }
+.panel-footer { padding: 20px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.3); display: flex; flex-direction: column; gap: 12px; }
+.btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+button.action-btn { background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; }
+button.action-btn:hover { background: rgba(255,255,255,0.08); border-color: #fff; }
+button.primary { background: var(--accent-dim); border-color: rgba(0,255,136,0.3); color: var(--accent); }
+button.primary:hover { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-dim); }
+.modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #111; border: 1px solid var(--border); padding: 30px; color: #fff; z-index: 1000; max-width: 400px; width: 80%; border-radius: 12px; box-shadow: 0 30px 80px rgba(0,0,0,0.95); }
+.modal h3 { margin: 0 0 15px 0; color: var(--accent); font-family: var(--font-mono); text-transform: uppercase; }
+.modal p { line-height: 1.5; font-size: 13px; color: #ccc; margin-bottom: 10px; }
+.modal-links { margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
+.modal-links a { color: var(--text-dim); text-decoration: none; font-size: 13px; font-family: var(--font-mono); display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+.modal-links a:hover { color: var(--accent); }
+.modal-close-icon { position: absolute; top: 20px; right: 20px; background: none; border: none; color: #666; cursor: pointer; }
+.modal-close-icon:hover { color: #fff; }
+@media (max-width: 767px) { #settings-panel { top: 0; bottom: 0; right: 0; width: 100%; border-radius: 0; border: none; }
+}</style>
+</head>
+<body><h1 style="display: none;">Voronoi Vale: Organic GPU Art Generator</h1>
+
+<div id="ui-layer">
+    <div id="menu-trigger">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <div id="settings-panel">
+        <div class="panel-header">
+            <h2>Voronoi Vale</h2>
+            <div class="header-actions">
+                <button class="header-btn" id="info-trigger" title="Info">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </button>
+                <button class="header-btn close" id="panel-close" title="Close">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <div class="panel-body" id="controls-container"></div>
+
+        <div class="panel-footer">
+            <div class="btn-row">
+                <button class="action-btn primary" id="btn-rand">Randomize</button>
+                <button class="action-btn" id="btn-reset">Reset</button>
+            </div>
+            <div class="btn-row">
+                <button class="action-btn" id="btn-save">Save Config</button>
+                <button class="action-btn" id="btn-load">Load Config</button>
+            </div>
+            <button class="action-btn" id="btn-export-img" style="width: 100%">Export 4K Wallpaper</button>
+        </div>
+        <input type="file" id="file-input" style="display: none" accept=".json">
+    </div>
+</div>
+
+<div id="info-modal" class="modal">
+    <button class="modal-close-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+    <h3>System Info</h3>
+    <p>Voronoi Vale is a GPU-accelerated organic simulation environment.</p>
+    <p><strong>Controls:</strong> 
+       <br>• <strong>Warp Scale:</strong> Size of space distortion waves.
+       <br>• <strong>Chaos Freq:</strong> Size of turbulence fields.
+       <br>• <strong>Scatter:</strong> 0.0 = Uniform Grid, 1.0 = Organic Clusters.
+    </p>
+    <p><strong>Auto-Cycle:</strong> Use the timer in the Time section to automatically randomize the view.</p>
+    
+    <div class="modal-links">
+        <a href="https://pirillo.com/arcade/" target="_blank">
+            <span>More Apps</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+        </a>
+        <a href="https://chris.pirillo.com/" target="_blank">
+            <span>Follow Chris</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+        </a>
+        <a href="https://ctrlaltcreate.live/" target="_blank">
+            <span>Learn More</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+        </a>
+    </div>
+</div>
+
+<div id="error-modal" class="modal" style="border-color: #ff5555;">
+    <h3 style="color: #ff5555;">GPU Error</h3>
+    <p id="err-text">Initializing...</p>
+</div>
+
+<canvas id="canvas"></canvas>
+
+<script type="text/wgsl" id="shader-physics">
+    struct Particle {
+        pos: vec2f,
+        vel: vec2f,
+        target_pos: vec2f, 
+        pad: vec2f,
+        color: vec4f,
+    };
+
+    struct Params {
+        mouse_res: vec4f,
+        config: vec4f,
+        view: vec4f,
+        style: vec4f,
+        lighting: vec4f,
+        extra: vec4f,
+    };
+
+    @group(0) @binding(0) var<storage, read_write> particles: array<Particle>;
+    @group(0) @binding(1) var<uniform> params: Params;
+
+    fn hash(p: vec2f) -> f32 {
+        return fract(sin(dot(p, vec2f(12.9898, 78.233))) * 43758.5453);
+    }
+
+    fn noise(p: vec2f) -> f32 {
+        let i = floor(p);
+        let f = fract(p);
+        let u = f * f * (3.0 - 2.0 * f);
+        return mix(mix(hash(i + vec2f(0.0,0.0)), hash(i + vec2f(1.0,0.0)), u.x),
+                   mix(hash(i + vec2f(0.0,1.0)), hash(i + vec2f(1.0,1.0)), u.x), u.y);
+    }
+
+    @compute @workgroup_size(64, 1, 1)
+    fn main(@builtin(global_invocation_id) GlobalInvocationID : vec3u) {
+        let index = GlobalInvocationID.x;
+        if (index >= arrayLength(&particles)) { return; }
+
+        var p = particles[index];
+
+        let time = params.config.x;
+        let k_spring = params.config.y;
+        let k_damp = params.config.z;
+        let repulsion_str = params.config.w;
+        let noise_str = params.lighting.y;
+        let noise_scale = params.extra.x;
+        let zoom = params.view.z;
+
+        let mouse_screen = params.mouse_res.xy;
+        let res = params.mouse_res.zw;
+        let center = res * 0.5;
+        let mouse_world = (mouse_screen - center) / zoom + center;
+
+        // Spring
+        let diff = p.target_pos - p.pos;
+        let spring_force = diff * k_spring;
+
+        // Repulsion
+        let mouse_diff = p.pos - mouse_world;
+        let dist = length(mouse_diff);
+        var repulsion = vec2f(0.0);
+        let radius = 350.0 / zoom; 
+
+        if (dist < radius && dist > 1.0) {
+            let strength = (1.0 - dist / radius);
+            repulsion = normalize(mouse_diff) * strength * strength * repulsion_str * 2.0;
+        }
+
+        // Turbulence
+        let n_scale = max(0.0001, noise_scale); 
+        let n_val_x = noise(vec2f(p.pos.x * n_scale, time * 0.2));
+        let n_val_y = noise(vec2f(p.pos.y * n_scale, time * 0.2 + 10.0));
+        let turbulence = (vec2f(n_val_x, n_val_y) - 0.5) * noise_str * 3.0;
+
+        let acceleration = spring_force + repulsion + turbulence;
+        p.vel += acceleration;
+        p.vel *= k_damp;
+        p.pos += p.vel;
+
+        particles[index] = p;
+    }
+</script>
+
+<script type="text/wgsl" id="shader-voronoi">
+    struct Particle {
+        pos: vec2f,
+        vel: vec2f,
+        target_pos: vec2f,
+        pad: vec2f,
+        color: vec4f,
+    };
+
+    struct Params {
+        mouse_res: vec4f,
+        config: vec4f,
+        view: vec4f,
+        style: vec4f,
+        lighting: vec4f,
+        extra: vec4f,
+    };
+
+    @group(0) @binding(0) var<storage, read> particles: array<Particle>;
+    @group(0) @binding(1) var outTexture: texture_storage_2d<rgba16float, write>;
+    @group(0) @binding(2) var<uniform> params: Params;
+
+    fn hash(p: vec2f) -> f32 {
+        return fract(sin(dot(p, vec2f(12.9898, 78.233))) * 43758.5453);
+    }
+
+    fn noise(p: vec2f) -> f32 {
+        let i = floor(p);
+        let f = fract(p);
+        let u = f * f * (3.0 - 2.0 * f);
+        return mix(mix(hash(i + vec2f(0.0,0.0)), hash(i + vec2f(1.0,0.0)), u.x),
+                   mix(hash(i + vec2f(0.0,1.0)), hash(i + vec2f(1.0,1.0)), u.x), u.y);
+    }
+
+    fn get_distance(diff: vec2f, metric: f32) -> f32 {
+        let d_euc = length(diff);
+        let d_man = abs(diff.x) + abs(diff.y);
+        let d_cheb = max(abs(diff.x), abs(diff.y));
+        if (metric < 1.0) { return mix(d_man, d_euc, metric); } 
+        else { return mix(d_euc, d_cheb, metric - 1.0); }
+    }
+
+    @compute @workgroup_size(8, 8, 1)
+    fn main(@builtin(global_invocation_id) id : vec3u) {
+        let dims = textureDimensions(outTexture); 
+        if (id.x >= dims.x || id.y >= dims.y) { return; }
+
+        let coords = vec2i(id.xy);
+        let res = vec2f(dims);
+        let center = res * 0.5;
+        let screen_uv = vec2f(id.xy);
+        var centered = screen_uv - center;
+
+        // Domain Warping
+        let warp_str = params.view.x;
+        let warp_speed = params.view.y;
+        let warp_scale = params.view.w; 
+        let time = params.config.x;
+        
+        if (warp_str > 0.0) {
+            let n_scale = max(0.0001, warp_scale);
+            let n_time = time * warp_speed * 0.5;
+            let nx = noise(centered * n_scale + vec2f(n_time, 0.0));
+            let ny = noise(centered * n_scale + vec2f(0.0, n_time + 10.0));
+            let warp_vec = (vec2f(nx, ny) - 0.5) * 2.0;
+            centered += warp_vec * warp_str * 200.0;
+        }
+
+        let zoom = params.view.z;
+        let world_pos = (centered / zoom) + center;
+
+        var min_dist = 1e30;
+        var second_min_dist = 1e30;
+        var closest_index = -1;
+        var closest_vec = vec2f(0.0);
+        let metric = params.style.z;
+        let count = arrayLength(&particles);
+        
+        for (var i = 0u; i < count; i++) {
+            let p = particles[i];
+            let diff = world_pos - p.pos;
+            let d = get_distance(diff, metric);
+
+            if (d < min_dist) {
+                second_min_dist = min_dist;
+                min_dist = d;
+                closest_index = i32(i);
+                closest_vec = diff; 
+            } else if (d < second_min_dist) {
+                second_min_dist = d;
+            }
+        }
+
+        // Look
+        let cell_scale = params.style.x;
+        let sharpness = params.style.y;
+        let light_height = params.lighting.z;
+        let spec_power = params.lighting.x;
+        let rim_str = params.lighting.w;
+
+        // Color Processing - CPU sends correct colors now
+        let p_color = particles[closest_index].color.rgb;
+
+        let dir_to_center = normalize(-closest_vec);
+        let slope = saturate(min_dist * cell_scale * 4.0);
+        
+        var N = vec3f(0.0, 0.0, 1.0);
+        if (min_dist > 1.0) {
+            N = normalize(vec3f(dir_to_center.x * slope, dir_to_center.y * slope, 1.0));
+        }
+
+        let light_pos = vec3f(0.0, 0.0, light_height);
+        let L = normalize(light_pos);
+        let V = vec3f(0.0, 0.0, 1.0);
+        let H = normalize(L + V);
+
+        let NdotL = max(dot(N, L), 0.0);
+        let NdotH = max(dot(N, H), 0.0);
+        let specular = pow(NdotH, spec_power) * (spec_power * 0.005);
+        let diffuse = 0.2 + NdotL * 0.6;
+        let rim = 1.0 - max(dot(N, V), 0.0);
+        let rim_glow = pow(rim, 3.0) * rim_str;
+        let border_dist = second_min_dist - min_dist;
+        let border_glow = smoothstep(sharpness, 0.0, border_dist);
+        let cell_body = exp(-min_dist * cell_scale); 
+
+        var col = p_color * cell_body * diffuse;
+        col += vec3f(specular);
+        col += p_color * border_glow;
+        col += vec3f(1.0) * rim_glow;
+
+        let vig = 1.0 - length(screen_uv/res - 0.5) * 0.6;
+        col *= vig;
+
+        textureStore(outTexture, coords, vec4f(col, 1.0));
+    }
+</script>
+
+<script type="text/wgsl" id="shader-render">
+    struct VertexOutput {
+        @builtin(position) position : vec4f,
+        @location(0) uv : vec2f,
+    };
+    @vertex
+    fn vs_main(@builtin(vertex_index) vertexIndex : u32) -> VertexOutput {
+        var pos = array<vec2f, 3>(
+            vec2f(-1.0, -1.0),
+            vec2f( 3.0, -1.0),
+            vec2f(-1.0,  3.0)
+        );
+        var output : VertexOutput;
+        let p = pos[vertexIndex];
+        output.position = vec4f(p, 0.0, 1.0);
+        output.uv = vec2f(p.x * 0.5 + 0.5, 1.0 - (p.y * 0.5 + 0.5));
+        return output;
+    }
+    @group(0) @binding(0) var voronoiTexture: texture_2d<f32>;
+    @group(0) @binding(1) var samp: sampler;
+    @fragment
+    fn fs_main(@location(0) uv : vec2f) -> @location(0) vec4f {
+        return textureSample(voronoiTexture, samp, uv);
+    }
+</script>
+
+<script>
+function mulberry32(a) {
+    return function() {
+      var t = a += 0x6D2B79F5;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    }
+}
+
+// Robust HSL to Hex
+function hslToHex(h, s, l) {
+  l /= 100;
+  const a = s * Math.min(l, 1 - l) / 100;
+  const f = n => {
+    const k = (n + h / 30) % 12;
+    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    return Math.round(255 * color).toString(16).padStart(2, '0');
+  };
+  return `#${f(0)}${f(8)}${f(4)}`;
+}
+
+class VoronoiApp {
+    constructor() {
+        this.canvas = document.getElementById('canvas');
+        this.state = {
+            spring: 0.06, damp: 0.95, repulsion: 40.0, noise: 1.0,
+            cellScale: 0.005, sharpness: 2.0, metric: 1.0, smoothness: 0.0,
+            lightHeight: 1.0, specular: 32.0, rim: 0.4,
+            warp: 0.0, warpSpeed: 0.5, warpScale: 0.002,
+            zoom: 1.0, speed: 1.0, noiseScale: 0.005,
+            distribution: 1.0, 
+            autoInterval: 0,
+            seed: Date.now(),
+            colors: ['#00ffcc', '#ff3388', '#8833ff', '#ffcc00']
+        };
+        this.input = { mouse: { x: -9999, y: -9999 } };
+        this.isTransitioning = false;
+        
+        this.uiConfig = [
+            {
+                section: "Space Warp",
+                controls: [
+                    { label: "Strength", key: "warp", min: 0, max: 2, step: 0.01 },
+                    { label: "Warp Scale", key: "warpScale", min: 0.0001, max: 0.01, step: 0.0001 },
+                    { label: "Flow Speed", key: "warpSpeed", min: 0, max: 2, step: 0.01 },
+                    { label: "Zoom", key: "zoom", min: 1.0, max: 3.0, step: 0.01 }
+                ]
+            },
+            {
+                section: "Structure",
+                controls: [
+                    { label: "Scatter", key: "distribution", min: 0.0, max: 1.0, step: 0.01 },
+                    { label: "Metric Morph", key: "metric", min: 0, max: 2, step: 0.01 },
+                    { label: "Cell Scale", key: "cellScale", min: 0.001, max: 0.03, step: 0.001 },
+                    { label: "Edge Sharpness", key: "sharpness", min: 0.01, max: 5.0, step: 0.01 }
+                ]
+            },
+            {
+                section: "Palette",
+                controls: [
+                    { label: "Hue Shift", key: "hueShift", min: 0.0, max: 1.0, step: 0.01 },
+                    { label: "Saturation", key: "saturation", min: 0.0, max: 2.0, step: 0.01 }
+                ]
+            },
+            {
+                section: "Lighting",
+                controls: [
+                    { label: "Light Height", key: "lightHeight", min: 0.1, max: 3.0, step: 0.1 },
+                    { label: "Rim Light", key: "rim", min: 0, max: 1.0, step: 0.01 },
+                    { label: "Surface Gloss", key: "specular", min: 0, max: 128, step: 1 }
+                ]
+            },
+            {
+                section: "Physics",
+                controls: [
+                    { label: "Fluidity", key: "damp", min: 0.8, max: 0.99, step: 0.001 },
+                    { label: "Tension", key: "spring", min: 0.01, max: 0.2, step: 0.01 },
+                    { label: "Chaos Strength", key: "noise", min: 0, max: 5.0, step: 0.1 },
+                    { label: "Chaos Freq", key: "noiseScale", min: 0.001, max: 0.02, step: 0.001 },
+                    { label: "Cursor Repel", key: "repulsion", min: 0, max: 200, step: 5 }
+                ]
+            },
+            {
+                section: "Time",
+                controls: [
+                    { label: "Sim Speed", key: "speed", min: 0, max: 4.0, step: 0.1 },
+                    { label: "Auto Cycle (s)", key: "autoInterval", min: 0, max: 60, step: 1 }
+                ]
+            }
+        ];
+        
+        this.uiRefs = {};
+        this.init();
+    }
+
+    async init() {
+        if (!navigator.gpu) return this.fail("WebGPU not supported.");
+        this.adapter = await navigator.gpu.requestAdapter();
+        if (!this.adapter) return this.fail("No GPU adapter.");
+        this.device = await this.adapter.requestDevice();
+        this.context = this.canvas.getContext('webgpu');
+        
+        await this.setupGraphics();
+        
+        this.buildUI();
+        this.setupEventListeners();
+        
+        await this.initGPUResources();
+        
+        this.randomize();
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+        requestAnimationFrame((t) => this.loop(t));
+    }
+
+    fail(msg) {
+        document.getElementById('error-modal').style.display = 'block';
+        document.getElementById('err-text').textContent = msg;
+        console.error(msg);
+    }
+
+    buildUI() {
+        const container = document.getElementById('controls-container');
+        container.innerHTML = '';
+
+        this.uiConfig.forEach((grp) => {
+            const header = document.createElement('div');
+            header.className = 'section-header';
+            header.textContent = grp.section;
+            container.appendChild(header);
+
+            const body = document.createElement('div');
+            body.className = 'section-content';
+            
+            grp.controls.forEach(ctrl => {
+                const row = document.createElement('div');
+                row.className = 'control-row';
+                
+                const top = document.createElement('div');
+                top.className = 'control-top';
+                const lbl = document.createElement('span');
+                lbl.className = 'label-text';
+                lbl.textContent = ctrl.label;
+                const numInput = document.createElement('input');
+                numInput.type = 'number';
+                numInput.min = ctrl.min;
+                numInput.max = ctrl.max;
+                numInput.step = ctrl.step;
+                numInput.value = this.state[ctrl.key];
+                top.appendChild(lbl);
+                top.appendChild(numInput);
+
+                const sliderContainer = document.createElement('div');
+                sliderContainer.className = 'slider-container';
+                const rangeInput = document.createElement('input');
+                rangeInput.type = 'range';
+                rangeInput.min = ctrl.min;
+                rangeInput.max = ctrl.max;
+                rangeInput.step = ctrl.step;
+                rangeInput.value = this.state[ctrl.key];
+                sliderContainer.appendChild(rangeInput);
+                row.appendChild(top);
+                row.appendChild(sliderContainer);
+                body.appendChild(row);
+
+                this.bindControl(ctrl.key, rangeInput, numInput);
+            });
+
+            if (grp.section === "Palette") {
+                const grid = document.createElement('div');
+                grid.className = 'color-grid';
+                this.state.colors.forEach((c, i) => {
+                    const input = document.createElement('input');
+                    input.type = 'color';
+                    input.value = c;
+                    input.id = `col-${i}`;
+                    input.addEventListener('input', e => {
+                        this.state.colors[i] = e.target.value;
+                        this.updateColorsOnGPU();
+                    });
+                    grid.appendChild(input);
+                });
+                body.appendChild(grid);
+            }
+
+            container.appendChild(body);
+        });
+    }
+
+    bindControl(key, range, num) {
+        this.uiRefs[key] = { range, num };
+        
+        const update = () => {
+            const val = parseFloat(range.value);
+            num.value = val;
+            this.state[key] = val;
+            if (key === 'distribution') this.updateTargets(); 
+        };
+
+        range.addEventListener('input', update);
+        
+        num.addEventListener('input', () => {
+            let val = parseFloat(num.value);
+            if (isNaN(val)) return;
+            this.state[key] = val;
+            range.value = val;
+            if (key === 'distribution') this.updateTargets();
+        });
+        
+        num.addEventListener('blur', () => {
+             let val = parseFloat(num.value);
+             if (val < parseFloat(range.min)) val = parseFloat(range.min);
+             if (val > parseFloat(range.max)) val = parseFloat(range.max);
+             num.value = val;
+             range.value = val;
+             this.state[key] = val;
+             if (key === 'distribution') this.updateTargets();
+        });
+    }
+
+    syncUI() {
+        for (const key in this.uiRefs) {
+            const { range, num } = this.uiRefs[key];
+            range.value = this.state[key];
+            num.value = this.state[key];
+        }
+        this.state.colors.forEach((c, i) => {
+            const el = document.getElementById(`col-${i}`);
+            if(el) el.value = c;
+        });
+    }
+
+    setupEventListeners() {
+        const toggle = (id, f) => document.getElementById(id).classList.toggle('active', f);
+        document.getElementById('menu-trigger').onclick = (e) => { e.stopPropagation(); toggle('settings-panel', true); };
+        document.getElementById('panel-close').onclick = (e) => { e.stopPropagation(); toggle('settings-panel', false); };
+        document.getElementById('info-trigger').onclick = (e) => { e.stopPropagation(); document.getElementById('info-modal').style.display = 'block'; };
+        document.querySelector('.modal-close-icon').onclick = () => document.getElementById('info-modal').style.display = 'none';
+
+        document.addEventListener('pointerdown', (e) => {
+            const panel = document.getElementById('settings-panel');
+            const menu = document.getElementById('menu-trigger');
+            const info = document.getElementById('info-modal');
+            if (panel.classList.contains('active') && !panel.contains(e.target) && !menu.contains(e.target)) {
+                toggle('settings-panel', false);
+            }
+            if (e.target === info) info.style.display = 'none';
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                toggle('settings-panel', false);
+                document.getElementById('info-modal').style.display = 'none';
+            }
+        });
+
+        document.getElementById('btn-rand').onclick = () => this.transition(true);
+        document.getElementById('btn-reset').onclick = () => this.reset();
+        document.getElementById('btn-save').onclick = () => this.exportJSON();
+        document.getElementById('btn-load').onclick = () => document.getElementById('file-input').click();
+        document.getElementById('file-input').onchange = (e) => this.importJSON(e);
+        document.getElementById('btn-export-img').onclick = () => this.exportWallpaper();
+
+        this.canvas.addEventListener('pointermove', e => {
+            this.input.mouse.x = e.clientX;
+            this.input.mouse.y = e.clientY;
+        });
+        
+        this.canvas.addEventListener('dblclick', e => {
+            if (document.getElementById('settings-panel').classList.contains('active')) return;
+            this.transition(true);
+        });
+    }
+
+    async setupGraphics() {
+        this.modules = {};
+        for (let id of ['shader-physics', 'shader-voronoi', 'shader-render']) {
+            this.modules[id] = this.device.createShaderModule({
+                code: document.getElementById(id).textContent
+            });
+        }
+
+        this.physLayout = this.device.createBindGroupLayout({
+            entries: [
+                { binding: 0, visibility: GPUShaderStage.COMPUTE, buffer: { type: 'storage' } },
+                { binding: 1, visibility: GPUShaderStage.COMPUTE, buffer: { type: 'uniform' } },
+            ]
+        });
+
+        this.vorLayout = this.device.createBindGroupLayout({
+            entries: [
+                { binding: 0, visibility: GPUShaderStage.COMPUTE, buffer: { type: 'read-only-storage' } },
+                { binding: 1, visibility: GPUShaderStage.COMPUTE, storageTexture: { access: 'write-only', format: 'rgba16float' } },
+                { binding: 2, visibility: GPUShaderStage.COMPUTE, buffer: { type: 'uniform' } },
+            ]
+        });
+
+        this.physPipeline = this.device.createComputePipeline({
+            layout: this.device.createPipelineLayout({ bindGroupLayouts: [this.physLayout] }),
+            compute: { module: this.modules['shader-physics'], entryPoint: 'main' }
+        });
+        this.vorPipeline = this.device.createComputePipeline({
+            layout: this.device.createPipelineLayout({ bindGroupLayouts: [this.vorLayout] }),
+            compute: { module: this.modules['shader-voronoi'], entryPoint: 'main' }
+        });
+        this.renderPipeline = this.device.createRenderPipeline({
+            layout: 'auto',
+            vertex: { module: this.modules['shader-render'], entryPoint: 'vs_main' },
+            fragment: { module: this.modules['shader-render'], entryPoint: 'fs_main', targets: [{ format: navigator.gpu.getPreferredCanvasFormat() }] },
+            primitive: { topology: 'triangle-list' },
+        });
+        this.sampler = this.device.createSampler({ magFilter: 'linear', minFilter: 'linear' });
+    }
+
+    calculateLayout(i, width, height, rand) {
+        const GRID_COLS = 16;
+        const GRID_ROWS = 10;
+        const cellW = width / GRID_COLS;
+        const cellH = height / GRID_ROWS;
+
+        const col = i % GRID_COLS;
+        const row = Math.floor(i / GRID_COLS);
+        const gridX = (col + 0.5) * cellW - width/2 + width/2;
+        const gridY = (row + 0.5) * cellH - height/2 + height/2;
+
+        if (!this._clusters) {
+            this._clusters = [];
+            for(let k=0; k<8; k++) {
+                 this._clusters.push({
+                     x: (rand() - 0.5) * width * 0.8,
+                     y: (rand() - 0.5) * height * 0.8
+                 });
+            }
+        }
+        
+        const cIdx = i % 8;
+        const center = this._clusters[cIdx];
+        const magic = i * 1337.123;
+        const r = (Math.abs(Math.sin(magic)) + Math.abs(Math.cos(magic * 0.5))) * 60;
+        const theta = Math.abs(Math.sin(magic * 0.1)) * Math.PI * 2;
+        const clusterX = center.x + Math.cos(theta) * r + width/2;
+        const clusterY = center.y + Math.sin(theta) * r + height/2;
+
+        const t = this.state.distribution;
+        const x = gridX * (1.0 - t) + clusterX * t;
+        const y = gridY * (1.0 - t) + clusterY * t;
+        
+        return { x, y };
+    }
+
+    async initGPUResources() {
+        const GRID_COLS = 16;
+        const GRID_ROWS = 10;
+        this.particleCount = GRID_COLS * GRID_ROWS; 
+        
+        const pData = new Float32Array(this.particleCount * 12);
+        let width = window.innerWidth, height = window.innerHeight;
+        
+        const rand = mulberry32(this.state.seed);
+        this._clusters = [];
+        for(let k=0; k<8; k++) {
+             this._clusters.push({
+                 x: (rand() - 0.5) * width * 0.8,
+                 y: (rand() - 0.5) * height * 0.8
+             });
+        }
+
+        for (let i = 0; i < this.particleCount; i++) {
+            const pos = this.calculateLayout(i, width, height, rand);
+            const off = i * 12;
+            pData[off+0] = pos.x; pData[off+1] = pos.y; 
+            pData[off+4] = pos.x; pData[off+5] = pos.y; 
+        }
+        
+        this.particleBuffer = this.device.createBuffer({
+            size: pData.byteLength,
+            usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+            mappedAtCreation: true
+        });
+        new Float32Array(this.particleBuffer.getMappedRange()).set(pData);
+        this.particleBuffer.unmap();
+
+        this.paramBuffer = this.device.createBuffer({
+            size: 112,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+        });
+
+        if (this.vorTexture) {
+            this.bindGroups();
+        }
+    }
+
+    updateTargets() {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const rand = mulberry32(this.state.seed); 
+
+        for (let i = 0; i < this.particleCount; i++) {
+            const pos = this.calculateLayout(i, width, height, rand);
+            this.device.queue.writeBuffer(
+                this.particleBuffer, 
+                i * 48 + 16, 
+                new Float32Array([pos.x, pos.y])
+            );
+        }
+    }
+
+    updateColorsOnGPU() {
+        const colors = this.state.colors.map(c => {
+            const val = parseInt(c.slice(1), 16);
+            return [(val >> 16 & 255)/255, (val >> 8 & 255)/255, (val & 255)/255];
+        });
+        for(let i=0; i<this.particleCount; i++) {
+            const rgb = colors[i % 4];
+            this.device.queue.writeBuffer(this.particleBuffer, i * 48 + 32, new Float32Array([...rgb, 1.0]));
+        }
+    }
+
+    randomize() {
+        const r = (min, max) => Math.random() * (max - min) + min;
+        const s = this.state;
+        s.seed = Math.floor(Math.random() * 999999);
+        
+        s.warp = Math.random() < 0.3 ? 0 : r(0.1, 1.8);
+        s.warpSpeed = r(0.1, 1.5);
+        s.warpScale = r(0.001, 0.008); 
+        s.zoom = r(1.0, 2.5);
+        s.distribution = Math.random() < 0.2 ? 0.0 : r(0.2, 1.0);
+        
+        s.spring = r(0.01, 0.12);
+        s.damp = r(0.85, 0.99);
+        s.noise = r(0.0, 4.0);
+        s.noiseScale = r(0.002, 0.01);
+        s.repulsion = r(20, 150);
+        
+        s.metric = Math.random() < 0.4 ? r(0, 0.5) : r(0.8, 1.8); 
+        s.cellScale = r(0.002, 0.02);
+        s.sharpness = r(0.5, 4.0);
+        s.lightHeight = r(0.5, 2.5);
+        s.specular = r(10, 100);
+        s.rim = r(0.1, 0.9);
+        s.speed = r(0.5, 2.0);
+        
+        const mode = Math.random();
+        const baseHue = Math.random() * 360;
+        
+        s.colors = Array(4).fill(0).map((_, i) => {
+            let h, sat = 80, lit = 50;
+            if (mode < 0.25) { 
+                h = (baseHue + i * 30) % 360;
+            } else if (mode < 0.5) {
+                h = (i % 2 === 0) ? baseHue : (baseHue + 180) % 360;
+                h += Math.random() * 20 - 10;
+            } else if (mode < 0.75) {
+                h = (baseHue + i * 120) % 360;
+            } else {
+                h = Math.random() * 360;
+            }
+            sat = 60 + Math.random() * 40;
+            lit = 40 + Math.random() * 40;
+            return hslToHex(h, sat, lit);
+        });
+
+        this.syncUI();
+        this.updateColorsOnGPU();
+    }
+
+    reset() {
+        Object.assign(this.state, {
+            spring: 0.06, damp: 0.95, repulsion: 40.0, 
+            noise: 0.0, noiseScale: 0.005,
+            cellScale: 0.005, sharpness: 2.0, metric: 1.0, smoothness: 0.0,
+            lightHeight: 1.0, specular: 32.0, rim: 0.4,
+            warp: 0.0, warpSpeed: 0.5, warpScale: 0.002, 
+            zoom: 1.0, speed: 1.0, distribution: 0.0,
+            autoInterval: 0,
+            hueShift: 0.0, saturation: 1.0
+        });
+        this.syncUI();
+        this.transition(false);
+    }
+
+    async transition(shouldRandomize) {
+        if (this.isTransitioning) return;
+        this.isTransitioning = true;
+        this.canvas.classList.add('fade-out');
+        
+        setTimeout(async () => {
+            if (shouldRandomize) {
+                this.randomize(); 
+                await this.initGPUResources(); 
+                this.updateColorsOnGPU(); 
+            } else {
+                await this.initGPUResources();
+                this.updateColorsOnGPU(); 
+            }
+            this.canvas.classList.remove('fade-out');
+            this.isTransitioning = false;
+            this.state.lastAutoTime = performance.now();
+        }, 400);
+    }
+
+    resize(w, h) {
+        const width = w || window.innerWidth;
+        const height = h || window.innerHeight;
+        if (this.canvas.width === width && this.canvas.height === height) return;
+        this.canvas.width = width;
+        this.canvas.height = height;
+        this.context.configure({
+            device: this.device,
+            format: navigator.gpu.getPreferredCanvasFormat(),
+            alphaMode: 'opaque',
+            usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC
+        });
+        if (this.vorTexture) this.vorTexture.destroy();
+        this.vorTexture = this.device.createTexture({
+            size: [width, height],
+            format: 'rgba16float',
+            usage: GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.TEXTURE_BINDING,
+        });
+        this.bindGroups();
+    }
+
+    bindGroups() {
+        this.physBindGroup = this.device.createBindGroup({
+            layout: this.physLayout,
+            entries: [
+                { binding: 0, resource: { buffer: this.particleBuffer } },
+                { binding: 1, resource: { buffer: this.paramBuffer } },
+            ]
+        });
+        this.vorBindGroup = this.device.createBindGroup({
+            layout: this.vorLayout,
+            entries: [
+                { binding: 0, resource: { buffer: this.particleBuffer } },
+                { binding: 1, resource: this.vorTexture.createView() },
+                { binding: 2, resource: { buffer: this.paramBuffer } },
+            ]
+        });
+        this.renderBindGroup = this.device.createBindGroup({
+            layout: this.renderPipeline.getBindGroupLayout(0),
+            entries: [
+                { binding: 0, resource: this.vorTexture.createView() },
+                { binding: 1, resource: this.sampler },
+            ]
+        });
+    }
+
+    async exportWallpaper() {
+        const targetW = 3840, targetH = 2160;
+        const oldW = this.canvas.width, oldH = this.canvas.height;
+        this.resize(targetW, targetH);
+        requestAnimationFrame(() => {
+            this.renderFrame(performance.now());
+            const data = this.canvas.toDataURL('image/png');
+            const a = document.createElement('a');
+            a.href = data;
+            a.download = `VoronoiVale_4K_${Date.now()}.png`;
+            a.click();
+            this.resize(oldW, oldH);
+        });
+    }
+
+    exportJSON() {
+        const blob = new Blob([JSON.stringify(this.state, null, 2)], {type : 'application/json'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `VoronoiVale_Config_${Date.now()}.json`;
+        a.click();
+    }
+
+    importJSON(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            try {
+                const data = JSON.parse(ev.target.result);
+                if (data.zoom < 1.0) data.zoom = 1.0;
+                
+                Object.assign(this.state, data);
+                this.syncUI();
+                this.initGPUResources(); 
+                this.updateColorsOnGPU();
+                this.transition(false);
+            } catch(x){ console.error("Bad JSON"); }
+        };
+        reader.readAsText(file);
+    }
+
+    loop(time) {
+        if (this.state.autoInterval > 0 && !this.isTransitioning) {
+            if (!this.state.lastAutoTime) this.state.lastAutoTime = time;
+            
+            if (time - this.state.lastAutoTime > this.state.autoInterval * 1000) {
+                this.transition(true);
+                this.state.lastAutoTime = time;
+            }
+        } else {
+            if (this.state.autoInterval <= 0) this.state.lastAutoTime = time;
+        }
+
+        this.renderFrame(time);
+        requestAnimationFrame((t) => this.loop(t));
+    }
+
+    renderFrame(time) {
+        if (!this.device || !this.vorTexture) return;
+        const s = this.state;
+        const t = time * 0.001 * s.speed;
+        const w = this.canvas.width, h = this.canvas.height;
+
+        const uArr = new Float32Array([
+            this.input.mouse.x, this.input.mouse.y, w, h,
+            t, s.spring, s.damp, s.repulsion,
+            s.warp, s.warpSpeed, s.zoom, s.warpScale,
+            s.cellScale, s.sharpness, s.metric, s.smoothness,
+            s.specular, s.noise, s.lightHeight, s.rim,
+            0, 0, 0, s.noiseScale 
+        ]);
+        this.device.queue.writeBuffer(this.paramBuffer, 0, uArr);
+
+        const enc = this.device.createCommandEncoder();
+        const pass1 = enc.beginComputePass();
+        pass1.setPipeline(this.physPipeline);
+        pass1.setBindGroup(0, this.physBindGroup);
+        pass1.dispatchWorkgroups(Math.ceil(this.particleCount / 64));
+        pass1.end();
+
+        const pass2 = enc.beginComputePass();
+        pass2.setPipeline(this.vorPipeline);
+        pass2.setBindGroup(0, this.vorBindGroup);
+        pass2.dispatchWorkgroups(Math.ceil(w / 8), Math.ceil(h / 8));
+        pass2.end();
+
+        const pass3 = enc.beginRenderPass({
+            colorAttachments: [{
+                view: this.context.getCurrentTexture().createView(),
+                clearValue: { r: 0, g: 0, b: 0, a: 1 },
+                loadOp: 'clear',
+                storeOp: 'store',
+            }]
+        });
+        pass3.setPipeline(this.renderPipeline);
+        pass3.setBindGroup(0, this.renderBindGroup);
+        pass3.draw(3);
+        pass3.end();
+
+        this.device.queue.submit([enc.finish()]);
+    }
+}
+
+window.onload = () => new VoronoiApp();
+</script>
+
+</body></html>
